@@ -104,6 +104,7 @@ public class GastoService {
         Long totalCategoria = gastoRepository.sumMontoByUsuarioAndCategoriaAndFechaBetween(usuario, categoria, inicio, fin);
 
         GastoResponse res = new GastoResponse();
+        res.setMensaje("Gasto registrado");
         res.setId(gasto.getId());
         res.setMonto(gasto.getMonto());
         res.setCategoria(categoria.getCodigo());

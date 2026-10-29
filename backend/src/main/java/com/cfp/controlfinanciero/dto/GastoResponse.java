@@ -1,9 +1,13 @@
 package com.cfp.controlfinanciero.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GastoResponse {
+    private String mensaje;
     private Long id;
     private Long monto;
     private String categoria;
@@ -13,6 +17,8 @@ public class GastoResponse {
     private Long totalCategoria;
     private LocalDateTime fechaRegistro;
 
+    public String getMensaje() { return mensaje; }
+    public void setMensaje(String mensaje) { this.mensaje = mensaje; }
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Long getMonto() { return monto; }

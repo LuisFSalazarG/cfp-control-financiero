@@ -3,10 +3,14 @@ package com.cfp.controlfinanciero.domain;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "gasto")
 public class Gasto {
+    /** Zona horaria del equipo: Colombia (UTC-5), sin horario de verano. */
+    public static final ZoneId ZONA_HORARIA = ZoneId.of("America/Bogota");
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,7 +37,7 @@ public class Gasto {
 
     @PrePersist
     void prePersist() {
-        if (fechaRegistro == null) fechaRegistro = LocalDateTime.now();
+        if (fechaRegistro == null) fechaRegistro = LocalDateTime.now(ZONA_HORARIA);
     }
 
     public Long getId() { return id; }
