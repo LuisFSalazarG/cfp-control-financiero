@@ -10,6 +10,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,7 +37,9 @@ class GastoIntegrationTest {
     @Test
     void cp10_sinSesion() throws Exception {
         mockMvc.perform(post("/api/gastos").contentType(MediaType.APPLICATION_JSON).content("{}"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message")
+                        .value("Debe iniciar sesión con credenciales válidas para usar el servicio"));
     }
 
     @Test
@@ -41,8 +48,24 @@ class GastoIntegrationTest {
         mockMvc.perform(post("/api/gastos").with(httpBasic("a@ejemplo.invalid", "password"))
                         .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.mensaje").value("Gasto registrado"))
                 .andExpect(jsonPath("$.monto").value(50000))
                 .andExpect(jsonPath("$.totalMes").value(50000));
+    }
+
+    @Test
+    void fechaRegistroEnHoraDeColombia() throws Exception {
+        String body = "{\"monto\":1500,\"categoria\":\"OTROS\",\"fecha\":\"2026-10-19\"}";
+        MvcResult res = mockMvc.perform(post("/api/gastos").with(httpBasic("a@ejemplo.invalid", "password"))
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String valor = objectMapper.readTree(res.getResponse().getContentAsString()).get("fechaRegistro").asText();
+        LocalDateTime registrado = LocalDateTime.parse(valor);
+        LocalDateTime ahora = LocalDateTime.now(ZoneId.of("America/Bogota"));
+        long diferenciaMinutos = Math.abs(Duration.between(registrado, ahora).toMinutes());
+        assertTrue(diferenciaMinutos <= 2,
+                "fechaRegistro debe estar en hora de Colombia (UTC-5). Valor guardado: " + valor);
     }
 
     @Test
