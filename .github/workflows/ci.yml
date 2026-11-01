@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop]
+
+jobs:
+  backend:
+    name: Compilar y probar backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Revisar si ya existe el backend
+        id: revisar
+        run: |
+          if [ -f backend/pom.xml ]; then echo "existe=true" >> "$GITHUB_OUTPUT"; else echo "existe=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Instalar Java 21
+        if: steps.revisar.outputs.existe == 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Compilar y correr las pruebas
+        if: steps.revisar.outputs.existe == 'true'
+        working-directory: backend
+        run: mvn -B test

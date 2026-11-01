@@ -1,0 +1,11 @@
+# Finales de linea iguales para todo el equipo (Windows, Mac y Linux)
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Archivos binarios
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.jar binary
