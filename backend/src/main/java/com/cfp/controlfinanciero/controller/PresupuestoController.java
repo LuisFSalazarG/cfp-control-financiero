@@ -3,6 +3,7 @@ package com.cfp.controlfinanciero.controller;
 import com.cfp.controlfinanciero.domain.Alerta;
 import com.cfp.controlfinanciero.domain.Presupuesto;
 import com.cfp.controlfinanciero.domain.Usuario;
+import com.cfp.controlfinanciero.dto.AlertaDTO;
 import com.cfp.controlfinanciero.dto.PresupuestoDTO;
 import com.cfp.controlfinanciero.repository.UsuarioRepository;
 import com.cfp.controlfinanciero.service.PresupuestoService;
@@ -63,9 +64,20 @@ public class PresupuestoController {
         double porcentaje = presupuestoService.obtenerPorcentajeActual(usuario.getId(), hoy.getMonthValue(), hoy.getYear());
         List<Alerta> alertas = presupuestoService.obtenerAlertas(usuario.getId());
 
+        List<AlertaDTO> alertasDTO = alertas.stream()
+                .map(a -> new AlertaDTO(
+                        a.getNivel(),
+                        a.getMes(),
+                        a.getAnio(),
+                        a.getMensaje(),
+                        a.getSugerencia(),
+                        a.getFechaCreacion()
+                ))
+                .toList();
+
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("porcentajeGastado", porcentaje);
-        respuesta.put("alertasActivas", alertas);
+        respuesta.put("alertasActivas", alertasDTO); // Retornamos los DTOs, no las entidades
 
         return ResponseEntity.ok(respuesta);
     }
