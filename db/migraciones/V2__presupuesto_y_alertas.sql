@@ -45,24 +45,25 @@ CREATE TABLE presupuesto_categoria (
         REFERENCES categoria(id) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB;
 
--- RF-09: alertas al 70, 80 y 90 %.
--- nivel, mes y anio sirven para que la misma alerta no se repita en el mes.
--- Quedan opcionales hasta que Backend los use (coordinado con CFP-31).
+-- RF-09: alertas al 70, 80 y 90 % (columnas iguales a la entidad Alerta del backend, CFP-31).
+-- La llave unica impide repetir el mismo nivel de alerta en el mismo mes (CA-19).
 CREATE TABLE alerta (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     usuario_id BIGINT UNSIGNED NOT NULL,
-    tipo_alerta VARCHAR(255) NOT NULL,
-    fecha DATE NOT NULL,
-    nivel TINYINT UNSIGNED NULL,
-    mes INT NULL,
-    anio INT NULL,
+    nivel INT NOT NULL,
+    mes INT NOT NULL,
+    anio INT NOT NULL,
+    mensaje VARCHAR(255) NOT NULL,
+    sugerencia VARCHAR(255) NULL,
+    fecha_creacion DATETIME NULL,
     PRIMARY KEY (id),
-    CONSTRAINT ck_alerta_nivel CHECK (nivel IS NULL OR nivel IN (70, 80, 90)),
-    CONSTRAINT ck_alerta_mes CHECK (mes IS NULL OR mes BETWEEN 1 AND 12),
+    CONSTRAINT ck_alerta_nivel CHECK (nivel IN (70, 80, 90)),
+    CONSTRAINT ck_alerta_mes CHECK (mes BETWEEN 1 AND 12),
+    CONSTRAINT ck_alerta_anio CHECK (anio BETWEEN 2000 AND 2100),
     CONSTRAINT uq_alerta_usuario_mes_nivel UNIQUE (usuario_id, anio, mes, nivel),
     CONSTRAINT fk_alerta_usuario FOREIGN KEY (usuario_id)
         REFERENCES usuario(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-    INDEX idx_alerta_usuario_fecha (usuario_id, fecha)
+    INDEX idx_alerta_usuario_fecha (usuario_id, fecha_creacion)
 ) ENGINE=InnoDB;
 
 -- Verificacion: deben aparecer 6 tablas y el usuario de prueba con telefono.
