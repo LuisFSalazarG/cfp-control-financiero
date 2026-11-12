@@ -35,7 +35,7 @@ public class DataInitializer {
                 u.setNombreCompleto("Usuario A");
                 u.setCorreo("a@ejemplo.invalid");
                 u.setCedula("0000000001");
-                u.setTelefono(null);
+                u.setTelefono("3001112233");
                 u.setContrasenaHash(passwordEncoder.encode("password"));
                 usuarioRepository.save(u);
             }
@@ -44,7 +44,7 @@ public class DataInitializer {
                 u.setNombreCompleto("Usuario B");
                 u.setCorreo("b@ejemplo.invalid");
                 u.setCedula("0000000002");
-                u.setTelefono(null);
+                u.setTelefono("3004445566");
                 u.setContrasenaHash(passwordEncoder.encode("password"));
                 usuarioRepository.save(u);
             }
