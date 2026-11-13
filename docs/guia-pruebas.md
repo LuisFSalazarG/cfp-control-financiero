@@ -27,7 +27,6 @@ curl -i -u a@ejemplo.invalid:<CONTRASEÑA> -X POST http://localhost:8080/api/pre
   -H "Content-Type: application/json" \
   -d '{"monto": 0}'
 
-
 ### Paso 2: Registrar gastos (POST /api/gastos)
 Registra los montos acumulados para evaluar los porcentajes y los umbrales de alertas.
 
@@ -60,22 +59,29 @@ curl -i -u a@ejemplo.invalid:<CONTRASEÑA> -X POST http://localhost:8080/api/gas
   -H "Content-Type: application/json" \
   -d '{"monto": 100000, "categoriaId": 1, "fecha": "2026-11-12", "nota": "Prueba alerta 90%"}'
 
+
 ### Paso 3: Consultar presupuesto y alertas (GET /api/presupuestos/alertas)
-El usuario se obtiene automáticamente de la sesión[cite: 3]. Verifica porcentajeGastado, alertasActivas y que cada alerta incluya su sugerencia (CP-21
+El usuario se obtiene automáticamente de la sesión. Verifica porcentajeGastado, alertasActivas y que cada alerta incluya su sugerencia (CP-21).
 
 # Consultar estado y alertas del Usuario A -> Esperado: 200 OK
 curl -i -u a@ejemplo.invalid:<CONTRASEÑA> -X GET http://localhost:8080/api/presupuestos/alertas \
   -H "Content-Type: application/json"
 
-## 3. Pruebas de Seguridad, Privacidad y Regresión
+##3. Pruebas de Seguridad, Privacidad y Regresión
 Seguridad: Consultar sin iniciar sesión (CP-22)
 
 # Esperado: Código 401 Unauthorized
 curl -i -X GET http://localhost:8080/api/presupuestos/alertas \
   -H "Content-Type: application/json"
 
+Privacidad: Aislamiento de datos entre usuarios (CP-23 - RNF-03)
+El Usuario B consulta /api/presupuestos/alertas con sus credenciales y solo debe ver sus propios datos, nunca las alertas ni presupuestos del Usuario A.
+
 curl -i -u b@ejemplo.invalid:<CONTRASEÑA> -X GET http://localhost:8080/api/presupuestos/alertas \
   -H "Content-Type: application/json"
+
+Regresión del Sprint 1 (CP-24)
+Confirmar que los casos críticos del Sprint 1 siguen funcionando con el mismo resultado esperado:
 
 # CP-11: Consultar categorías -> Esperado: 200 OK con las 5 categorías
 curl -i -u a@ejemplo.invalid:<CONTRASEÑA> -X GET http://localhost:8080/api/categorias
