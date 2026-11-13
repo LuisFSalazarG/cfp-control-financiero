@@ -16,7 +16,6 @@ Ejecuta los pasos en este orden exacto para validar el funcionamiento del presup
 ### Paso 1: Definir el gasto mensual (`POST /api/presupuestos`)
 El mes y el año los asigna el sistema automáticamente con la fecha actual.
 
-```bash
 # CP-13: Definir gasto mensual válido -> Esperado: 201 Created con mes, anio y montoLimite
 curl -i -u a@ejemplo.invalid:<CONTRASEÑA> -X POST http://localhost:8080/api/presupuestos \
   -H "Content-Type: application/json" \
@@ -27,7 +26,7 @@ curl -i -u a@ejemplo.invalid:<CONTRASEÑA> -X POST http://localhost:8080/api/pre
   -H "Content-Type: application/json" \
   -d '{"monto": 0}'
 
-### Paso 2: Registrar gastos (POST /api/gastos)
+Paso 2: Registrar gastos (POST /api/gastos)
 Registra los montos acumulados para evaluar los porcentajes y los umbrales de alertas.
 
 # CP-15: Gasto de $400.000 (sobre presupuesto de $1.000.000) -> Para validar porcentajeGastado = 40
@@ -60,14 +59,14 @@ curl -i -u a@ejemplo.invalid:<CONTRASEÑA> -X POST http://localhost:8080/api/gas
   -d '{"monto": 100000, "categoriaId": 1, "fecha": "2026-11-12", "nota": "Prueba alerta 90%"}'
 
 
-### Paso 3: Consultar presupuesto y alertas (GET /api/presupuestos/alertas)
+Paso 3: Consultar presupuesto y alertas (GET /api/presupuestos/alertas)
 El usuario se obtiene automáticamente de la sesión. Verifica porcentajeGastado, alertasActivas y que cada alerta incluya su sugerencia (CP-21).
 
 # Consultar estado y alertas del Usuario A -> Esperado: 200 OK
 curl -i -u a@ejemplo.invalid:<CONTRASEÑA> -X GET http://localhost:8080/api/presupuestos/alertas \
   -H "Content-Type: application/json"
 
-##3. Pruebas de Seguridad, Privacidad y Regresión
+3. Pruebas de Seguridad, Privacidad y Regresión
 Seguridad: Consultar sin iniciar sesión (CP-22)
 
 # Esperado: Código 401 Unauthorized
