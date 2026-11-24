@@ -1,0 +1,119 @@
+﻿
+SERVER_READY=True
+
+=== CP-13 Definir gasto mensual valido ===
+POST /api/presupuestos
+BODY: {"monto":1000000}
+{"mes":11,"anio":2026,"monto":1000000}
+HTTP_STATUS:201
+
+=== CP-14 Gasto mensual en 0 ===
+POST /api/presupuestos
+BODY: {"monto":0}
+{"message":"Solicitud inv├ílida"}
+HTTP_STATUS:400
+
+=== CP-15 Registrar gasto 400000 (40%) ===
+POST /api/gastos
+BODY: {"categoria":"ALIMENTACION","nota":"CP-15 porcentaje 40","monto":400000,"fecha":"2026-11-12"}
+{"mensaje":"Gasto registrado","id":1,"monto":400000,"categoria":"ALIMENTACION","fecha":"2026-11-12","nota":"CP-15 porcentaje 40","totalMes":400000,"totalCategoria":400000,"fechaRegistro":"2026-11-21T15:24:30.8024432"}
+HTTP_STATUS:201
+
+=== CP-15 Consultar alertas (40%) ===
+GET /api/presupuestos/alertas
+{"alertasActivas":[],"porcentajeGastado":40.0}
+HTTP_STATUS:200
+
+=== CP-18 Registrar gasto 200000 (60%) ===
+POST /api/gastos
+BODY: {"categoria":"ALIMENTACION","nota":"CP-18 sin alerta 60","monto":200000,"fecha":"2026-11-12"}
+{"mensaje":"Gasto registrado","id":2,"monto":200000,"categoria":"ALIMENTACION","fecha":"2026-11-12","nota":"CP-18 sin alerta 60","totalMes":600000,"totalCategoria":600000,"fechaRegistro":"2026-11-21T15:24:31.2549249"}
+HTTP_STATUS:201
+
+=== CP-18 Consultar alertas (sin alerta) ===
+GET /api/presupuestos/alertas
+{"alertasActivas":[],"porcentajeGastado":60.0}
+HTTP_STATUS:200
+
+=== CP-16 Registrar gasto 100000 (70%) ===
+POST /api/gastos
+BODY: {"categoria":"ALIMENTACION","nota":"CP-16 alerta 70","monto":100000,"fecha":"2026-11-12"}
+{"mensaje":"Gasto registrado","id":3,"monto":100000,"categoria":"ALIMENTACION","fecha":"2026-11-12","nota":"CP-16 alerta 70","totalMes":700000,"totalCategoria":700000,"fechaRegistro":"2026-11-21T15:24:31.6566761"}
+HTTP_STATUS:201
+
+=== CP-16 Consultar alertas (70%) ===
+GET /api/presupuestos/alertas
+{"alertasActivas":[{"nivel":70,"mes":11,"anio":2026,"mensaje":"Has alcanzado el 70% de tu presupuesto mensual.","sugerencia":"Llegaste al 70 % de tu gasto mensual. Te quedan $300000.00; revisa tus gastos.","fechaCreacion":"2026-11-21T15:24:31.8517853"}],"porcentajeGastado":70.0}
+HTTP_STATUS:200
+
+=== CP-19 Registrar gasto 30000 (73%) ===
+POST /api/gastos
+BODY: {"categoria":"ALIMENTACION","nota":"CP-19 no repeticion 73","monto":30000,"fecha":"2026-11-12"}
+{"mensaje":"Gasto registrado","id":4,"monto":30000,"categoria":"ALIMENTACION","fecha":"2026-11-12","nota":"CP-19 no repeticion 73","totalMes":730000,"totalCategoria":730000,"fechaRegistro":"2026-11-21T15:24:32.0753234"}
+HTTP_STATUS:201
+
+=== CP-19 Consultar alertas (no repite 70) ===
+GET /api/presupuestos/alertas
+{"alertasActivas":[{"nivel":70,"mes":11,"anio":2026,"mensaje":"Has alcanzado el 70% de tu presupuesto mensual.","sugerencia":"Llegaste al 70 % de tu gasto mensual. Te quedan $300000.00; revisa tus gastos.","fechaCreacion":"2026-11-21T15:24:31.851785"}],"porcentajeGastado":73.0}
+HTTP_STATUS:200
+
+=== CP-17 Registrar gasto 70000 (80%) ===
+POST /api/gastos
+BODY: {"categoria":"ALIMENTACION","nota":"CP-17 alerta 80","monto":70000,"fecha":"2026-11-12"}
+{"mensaje":"Gasto registrado","id":5,"monto":70000,"categoria":"ALIMENTACION","fecha":"2026-11-12","nota":"CP-17 alerta 80","totalMes":800000,"totalCategoria":800000,"fechaRegistro":"2026-11-21T15:24:32.4781548"}
+HTTP_STATUS:201
+
+=== CP-17 Consultar alertas (80%) ===
+GET /api/presupuestos/alertas
+{"alertasActivas":[{"nivel":70,"mes":11,"anio":2026,"mensaje":"Has alcanzado el 70% de tu presupuesto mensual.","sugerencia":"Llegaste al 70 % de tu gasto mensual. Te quedan $300000.00; revisa tus gastos.","fechaCreacion":"2026-11-21T15:24:31.851785"},{"nivel":80,"mes":11,"anio":2026,"mensaje":"Has alcanzado el 80% de tu presupuesto mensual.","sugerencia":"Llegaste al 80 % de tu gasto mensual. Te quedan $200000.00; revisa tus gastos.","fechaCreacion":"2026-11-21T15:24:32.6743229"}],"porcentajeGastado":80.0}
+HTTP_STATUS:200
+
+=== CP-17 Registrar gasto 100000 (90%) ===
+POST /api/gastos
+BODY: {"categoria":"ALIMENTACION","nota":"CP-17 alerta 90","monto":100000,"fecha":"2026-11-12"}
+{"mensaje":"Gasto registrado","id":6,"monto":100000,"categoria":"ALIMENTACION","fecha":"2026-11-12","nota":"CP-17 alerta 90","totalMes":900000,"totalCategoria":900000,"fechaRegistro":"2026-11-21T15:24:32.9001008"}
+HTTP_STATUS:201
+
+=== CP-17 Consultar alertas (90%) ===
+GET /api/presupuestos/alertas
+{"alertasActivas":[{"nivel":70,"mes":11,"anio":2026,"mensaje":"Has alcanzado el 70% de tu presupuesto mensual.","sugerencia":"Llegaste al 70 % de tu gasto mensual. Te quedan $300000.00; revisa tus gastos.","fechaCreacion":"2026-11-21T15:24:31.851785"},{"nivel":80,"mes":11,"anio":2026,"mensaje":"Has alcanzado el 80% de tu presupuesto mensual.","sugerencia":"Llegaste al 80 % de tu gasto mensual. Te quedan $200000.00; revisa tus gastos.","fechaCreacion":"2026-11-21T15:24:32.674323"},{"nivel":90,"mes":11,"anio":2026,"mensaje":"Has alcanzado el 90% de tu presupuesto mensual.","sugerencia":"Llegaste al 90 % de tu gasto mensual. Te quedan $100000.00; revisa tus gastos.","fechaCreacion":"2026-11-21T15:24:33.0992739"}],"porcentajeGastado":90.0}
+HTTP_STATUS:200
+
+=== CP-21 Verificar sugerencia en alertas ===
+GET /api/presupuestos/alertas
+{"alertasActivas":[{"nivel":70,"mes":11,"anio":2026,"mensaje":"Has alcanzado el 70% de tu presupuesto mensual.","sugerencia":"Llegaste al 70 % de tu gasto mensual. Te quedan $300000.00; revisa tus gastos.","fechaCreacion":"2026-11-21T15:24:31.851785"},{"nivel":80,"mes":11,"anio":2026,"mensaje":"Has alcanzado el 80% de tu presupuesto mensual.","sugerencia":"Llegaste al 80 % de tu gasto mensual. Te quedan $200000.00; revisa tus gastos.","fechaCreacion":"2026-11-21T15:24:32.674323"},{"nivel":90,"mes":11,"anio":2026,"mensaje":"Has alcanzado el 90% de tu presupuesto mensual.","sugerencia":"Llegaste al 90 % de tu gasto mensual. Te quedan $100000.00; revisa tus gastos.","fechaCreacion":"2026-11-21T15:24:33.099274"}],"porcentajeGastado":90.0}
+HTTP_STATUS:200
+
+=== CP-22 Consultar sin sesion (401) ===
+GET /api/presupuestos/alertas
+{"message":"Debe iniciar sesi├│n con credenciales v├ílidas para usar el servicio"}
+HTTP_STATUS:401
+
+=== CP-23 Usuario B consulta sus alertas ===
+GET /api/presupuestos/alertas
+{"alertasActivas":[],"porcentajeGastado":0.0}
+HTTP_STATUS:200
+
+=== CP-24 Regresion: consultar categorias ===
+GET /api/categorias
+[{"codigo":"ALIMENTACION","nombre":"Alimentaci├│n"},{"codigo":"TRANSPORTE","nombre":"Transporte"},{"codigo":"ENTRETENIMIENTO","nombre":"Entretenimiento"},{"codigo":"HOGAR","nombre":"Hogar"},{"codigo":"OTROS","nombre":"Otros"}]
+HTTP_STATUS:200
+
+=== CP-24 Regresion: gasto monto 0 (400) ===
+POST /api/gastos
+BODY: {"categoria":"ALIMENTACION","monto":0,"fecha":"2026-11-12"}
+{"message":"El monto debe ser un n├║mero mayor que cero"}
+HTTP_STATUS:400
+
+=== CP-24 Regresion: gasto categoria invalida (422) ===
+POST /api/gastos
+BODY: {"categoria":"NOEXISTE","monto":10000,"fecha":"2026-11-12"}
+{"message":"La categor├¡a no es v├ílida. Use una de las cinco predeterminadas"}
+HTTP_STATUS:422
+
+=== CP-24 Regresion: listar gastos del mes ===
+GET /api/gastos?mes=2026-11
+{"gastos":[{"id":1,"monto":400000,"categoria":"ALIMENTACION","fecha":"2026-11-12","nota":"CP-15 porcentaje 40","fechaRegistro":"2026-11-21T15:24:30.802443"},{"id":2,"monto":200000,"categoria":"ALIMENTACION","fecha":"2026-11-12","nota":"CP-18 sin alerta 60","fechaRegistro":"2026-11-21T15:24:31.254925"},{"id":3,"monto":100000,"categoria":"ALIMENTACION","fecha":"2026-11-12","nota":"CP-16 alerta 70","fechaRegistro":"2026-11-21T15:24:31.656676"},{"id":4,"monto":30000,"categoria":"ALIMENTACION","fecha":"2026-11-12","nota":"CP-19 no repeticion 73","fechaRegistro":"2026-11-21T15:24:32.075323"},{"id":5,"monto":70000,"categoria":"ALIMENTACION","fecha":"2026-11-12","nota":"CP-17 alerta 80","fechaRegistro":"2026-11-21T15:24:32.478155"},{"id":6,"monto":100000,"categoria":"ALIMENTACION","fecha":"2026-11-12","nota":"CP-17 alerta 90","fechaRegistro":"2026-11-21T15:24:32.900101"}],"totalMes":900000}
+HTTP_STATUS:200
+
+=== FIN ===
