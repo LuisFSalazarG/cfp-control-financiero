@@ -1,6 +1,7 @@
 package com.cfp.controlfinanciero.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "usuario")
@@ -18,7 +19,8 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 20)
     private String cedula;
 
-    @Column(length = 20)
+    @NotBlank(message = "El teléfono es obligatorio")
+    @Column(nullable = false, length = 20)
     private String telefono;
 
     @Column(name = "contrasena_hash", nullable = false, length = 255)

@@ -5,6 +5,8 @@ import com.cfp.controlfinanciero.domain.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -19,4 +21,8 @@ public interface GastoRepository extends JpaRepository<Gasto, Long> {
     Long sumMontoByUsuarioAndCategoriaAndFechaBetween(@Param("usuario") Usuario usuario, @Param("categoria") com.cfp.controlfinanciero.domain.Categoria categoria, @Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin);
 
     Optional<Gasto> findByIdAndUsuario(Long id, Usuario usuario);
+
+    // NUEVO MÉTODO PARA EL PRESUPUESTO
+    @Query("SELECT COALESCE(SUM(g.monto), 0) FROM Gasto g WHERE g.usuario.id = :usuarioId AND MONTH(g.fecha) = :mes AND YEAR(g.fecha) = :anio")
+    BigDecimal sumarGastosPorUsuarioYMes(@Param("usuarioId") Long usuarioId, @Param("mes") int mes, @Param("anio") int anio);
 }
