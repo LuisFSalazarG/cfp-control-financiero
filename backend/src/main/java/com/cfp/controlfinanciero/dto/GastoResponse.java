@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GastoResponse {
+    private AlertaCategoriaDTO alertaCategoria;
     private String mensaje;
     private Long id;
     private Long monto;
@@ -16,6 +17,9 @@ public class GastoResponse {
     private Long totalMes;
     private Long totalCategoria;
     private LocalDateTime fechaRegistro;
+
+    public AlertaCategoriaDTO getAlertaCategoria() { return alertaCategoria; }
+    public void setAlertaCategoria(AlertaCategoriaDTO alertaCategoria) { this.alertaCategoria = alertaCategoria; }
 
     public String getMensaje() { return mensaje; }
     public void setMensaje(String mensaje) { this.mensaje = mensaje; }

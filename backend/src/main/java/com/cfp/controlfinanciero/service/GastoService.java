@@ -3,6 +3,7 @@ package com.cfp.controlfinanciero.service;
 import com.cfp.controlfinanciero.domain.Categoria;
 import com.cfp.controlfinanciero.domain.Gasto;
 import com.cfp.controlfinanciero.domain.Usuario;
+import com.cfp.controlfinanciero.dto.AlertaCategoriaDTO;
 import com.cfp.controlfinanciero.dto.GastoMesResponse;
 import com.cfp.controlfinanciero.dto.GastoRequest;
 import com.cfp.controlfinanciero.dto.GastoResponse;
@@ -15,7 +16,10 @@ import com.cfp.controlfinanciero.repository.GastoRepository;
 import com.cfp.controlfinanciero.repository.UsuarioRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import com.cfp.controlfinanciero.repository.PresupuestoCategoriaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -28,7 +32,11 @@ public class GastoService {
     private final CategoriaRepository categoriaRepository;
     private final UsuarioRepository usuarioRepository;
 
-    public GastoService(GastoRepository gastoRepository, CategoriaRepository categoriaRepository, UsuarioRepository usuarioRepository) {
+    private final PresupuestoCategoriaRepository presupuestosCategoria;
+
+    public GastoService(GastoRepository gastoRepository, CategoriaRepository categoriaRepository,
+                        UsuarioRepository usuarioRepository, PresupuestoCategoriaRepository presupuestosCategoria) {
+        this.presupuestosCategoria = presupuestosCategoria;
         this.gastoRepository = gastoRepository;
         this.categoriaRepository = categoriaRepository;
         this.usuarioRepository = usuarioRepository;
@@ -43,6 +51,7 @@ public class GastoService {
                 .orElseThrow(() -> new BadRequestException("Debe iniciar sesión para registrar gastos"));
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public GastoResponse registrar(GastoRequest req) {
         Usuario usuario = usuarioActual();
 
@@ -89,6 +98,9 @@ public class GastoService {
             throw new BadRequestException("La nota no puede superar 200 caracteres");
         }
 
+        // Serializa los gastos del mismo presupuesto antes de calcular el acumulado.
+        var presupuesto = presupuestosCategoria.findByUsuarioAndCategoriaAndAnioAndMes(
+                usuario, categoria, fecha.getYear(), fecha.getMonthValue());
         Gasto gasto = new Gasto();
         gasto.setUsuario(usuario);
         gasto.setCategoria(categoria);
@@ -104,6 +116,11 @@ public class GastoService {
         Long totalCategoria = gastoRepository.sumMontoByUsuarioAndCategoriaAndFechaBetween(usuario, categoria, inicio, fin);
 
         GastoResponse res = new GastoResponse();
+        if (presupuesto.isPresent() && presupuesto.get().marcarAlertaSiCorresponde(totalCategoria)) {
+            res.setAlertaCategoria(new AlertaCategoriaDTO(codigo, 70,
+                    "Alcanzaste el 70 % de tu presupuesto de " + categoria.getNombre() + ".",
+                    "Revisa los gastos previstos para esta categoría antes de hacer otra compra."));
+        }
         res.setMensaje("Gasto registrado");
         res.setId(gasto.getId());
         res.setMonto(gasto.getMonto());
